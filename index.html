@@ -1,46 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>SocketIO chat</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>SocketIO chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 </head>
+
 <body>
-	<header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
-		<h5 class="my-0 mr-md-auto">Socket.io Chat</h5>
-		<nav class="my-2 mr-md-auto">
-			<a href="" class="p-2 text-dark">Home</a>
-			<a href="" class="p-2 text-dark">About us</a>
-			<a href="" class="p-2 text-dark">Support</a>
-			<a href="" class="p-2 text-dark">Pricing</a>
-		</nav>
-		<a href="" class="btn btn-outline-primary">Sign up</a>
-	</header>
-	<main class="container">
-		<section class="py-5 text-center">
-			<h2>Socket.io Chat</h2>
-			<p class="lead">Write your name and start messaging</p>
-		</section>
-		<section class="row">
-			<div class="col-6">
-				<h3>Start messaging</h3>
-				<form action="" id="messForm">
-					<label for="message">Message</label>
-					<textarea name="message" id="message" cols="30" rows="10" class="form-control" placeholder="Hello, world..."></textarea>
-					<button type="button" class="btn btn-info mt-2">Send</button>
-				</form>
-			</div>		
-			<div class="col-6">
-			<h3>Messages</h3>
-			<div id="all_messages"></div>
-		</div>
-		</section>
-	</main>
-	<script src="/socket.io/socket.io.js" type="text/javascript"></script>
-	<script type="text/javascript">
-		window.addEventListener('load', function() {
-			let socket = io.connect();
-		})
-	</script>
+    <header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="m-auto">Socket.io Chat</h5>
+    </header>
+    <main class="container">
+        <section class="py-5 text-center">
+            <h2>Socket.io Chat</h2>
+            <p class="lead">Write your name and start messaging</p>
+        </section>
+        <section class="row">
+            <div class="col-6">
+                <h3>Start messaging</h3>
+                <form id="messForm">
+                    <div class="form-group">
+                        <label for="name">Name <span class="text-danger">*</span></label>
+                        <input type="text" id="name" class="form-control" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea name="message" id="message" cols="30" rows="10" class="form-control" placeholder="Hello, world..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">
+                        <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="paper-plane" class="svg-inline--fa fa-paper-plane fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
+                            <path fill="currentColor" d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path>
+                        </svg>
+                        Send
+                    </button>
+                </form>
+            </div>
+            <div class="col-6">
+                <h3>Messages</h3>
+                <div id="allMessages" class="all-messages d-flex flex-column overflow-auto">
+                    <p class="text-secondary text-lg m-auto" id="noMessages">You haven't written anything yet...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    window.addEventListener('load', function() {
+        let socket = io.connect();
+
+        let form = document.querySelector('#messForm');
+        let message = document.querySelector('#message');
+        let name = document.querySelector('#name');
+        let allMessages = document.querySelector('#allMessages');
+
+        // get block with notification about no messages for removing
+        let noMessages = document.querySelector('#noMessages');
+
+        // colorize it!
+        let colors = ['primary', 'white'];
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            let msg = message.value;
+            let user = name.value;
+
+            socket.emit('sendMessage', { msg: msg, user: user });
+
+            // clear input after sending
+            message.value = '';
+
+            // fix name
+            name.disabled = "true";
+        });
+
+        socket.on('addMessage', function(data) {
+            let msg = data.msg;
+            let user = data.user;
+            let userId = data.userId;
+
+            function isEven(n) {
+                return n % 2 == 0;
+            }
+
+            let even = isEven(userId) ? 'even' : 'odd';
+            let color = isEven(userId) ? colors[0] : colors[1];
+
+            let date = new Date;
+            let hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+            let minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+            let time = hours + ':' + minutes;
+
+            // remove notifiaction
+            noMessages.remove();
+
+            allMessages.innerHTML += `
+                <div class="message mb-2 message-` + color + ` message-` + even + ` p-2 rounded w-75">
+                    <p class="font-weight-bold">` + user + `</p>` +
+                msg +
+                `<p class="text-right m-0"><small>` + time + `</small></p>` +
+                `</div>
+            `;
+        });
+    })
+    </script>
+    <style>
+    .all-messages {
+        max-height: 500px;
+        height: 100%;
+    }
+
+    .text-lg {
+        font-weight: 500;
+        font-size: 18pt;
+    }
+
+    .message-primary {
+        background: #007bff !important;
+        color: #fff !important;
+        border: 1px solid #007bff;
+    }
+
+    .message-white {
+        background: #fff !important;
+        color: #212529 !important;
+        border: 1px solid #212529;
+    }
+
+    .message-even {
+        margin-right: auto;
+    }
+
+    .message-odd {
+        margin-left: auto;
+    }
+    </style>
 </body>
+
 </html>
