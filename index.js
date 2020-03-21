@@ -1,7 +1,25 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io').listen(server);
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+
+// include mongodb
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+const url = 'mongodb://localhost:27017';
+ 
+// Database Name
+const dbName = 'socketio-chat';
+ 
+// Use connect method to connect to the server
+MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client) {
+  assert.equal(null, err);
+  console.log("Connected successfully to mongodb server");
+ 
+  const db = client.db(dbName);
+ 
+  client.close();
+});
 
 server.listen(3000);
 
@@ -29,7 +47,6 @@ io.sockets.on('connection', function (socket) {
 
         userId = users.indexOf(user);
         console.log('New user, user id: ', userId);
-
 
         io.sockets.emit('addMessage', {msg: msg, user: user, userId: userId});
     });
