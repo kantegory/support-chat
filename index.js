@@ -3,23 +3,8 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 
-// include mongodb
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
-const url = 'mongodb://localhost:27017';
- 
-// Database Name
-const dbName = 'socketio-chat';
- 
-// Use connect method to connect to the server
-MongoClient.connect(url, {useUnifiedTopology: true}, function(err, client) {
-  assert.equal(null, err);
-  console.log("Connected successfully to mongodb server");
- 
-  const db = client.db(dbName);
- 
-  client.close();
-});
+// include mongo
+const mongo = require('./utils/mongo');
 
 server.listen(3000);
 
