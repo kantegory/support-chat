@@ -1,5 +1,5 @@
 # socketio-chat
-Node.JS simple chat, using express and socket.io 
+Node.JS simple chat, using express, mongoDB and socket.io 
 
 ## Installing:
 
