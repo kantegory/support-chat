@@ -4,7 +4,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 
 // include mongo
-const mongo = require('./utils/mongo');
+const addMessages = require('./utils/mongo/addMessage');
 
 server.listen(3000);
 
@@ -14,6 +14,7 @@ app.get('/', function (request, response) {
 
 users = [];
 connections = [];
+messages = [];
 
 io.sockets.on('connection', function (socket) {
     console.log('Success connection');
@@ -29,6 +30,9 @@ io.sockets.on('connection', function (socket) {
         msg = data.msg;
         user = data.user;
         users.push(user);
+        messages.push({'msg': data.msg, 'user': data.user});
+
+        addMessages(messages);
 
         userId = users.indexOf(user);
         console.log('New user, user id: ', userId);
