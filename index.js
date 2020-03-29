@@ -3,6 +3,10 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 
+// include auth
+const passport = require('passport');
+const session = require('express-session');
+
 // include mongo
 const addMessages = require('./utils/mongo/addMessage');
 
