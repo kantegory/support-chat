@@ -20,3 +20,8 @@ cd socketio-chat && npm i
 ```bash
 npm start
 ```
+
+Example:
+
+![](examples/example.gif)
+

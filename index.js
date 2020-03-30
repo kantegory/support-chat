@@ -13,7 +13,7 @@ const addMessages = require('./utils/mongo/addMessage');
 server.listen(3000);
 
 app.get('/', function (request, response) {
-    response.sendFile(__dirname + '/index.html');
+    response.sendFile(__dirname + '/views/index.html');
 });
 
 users = [];
