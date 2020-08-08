@@ -45,87 +45,91 @@
     </section>
   </main>
   <script src="/socket.io/socket.io.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@3.1.9-1/crypto-js.min.js" type="text/javascript"></script>
   <script type="text/javascript">
   window.addEventListener('load', function() {
-    let socket = io.connect();
+    let socket = io.connect()
 
-    let params = window.location.search.substr(1).split('&')
+    let params = window.location.href
 
-    let optionalTo = params.filter(param => param.includes('to'))[0]
+    params = new URL(params)
+
+    let optionalTo = params.searchParams.get('to')
+
+    let requiredFrom = params.searchParams.get('from')
+
+    const encryptWithAES = text => {
+      const passphrase = 'secret';
+      return CryptoJS.AES.encrypt(text, passphrase).toString();
+    };
+
+    const decryptWithAES = ciphertext => {
+      const passphrase = 'secret';
+      const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
+      const originalText = bytes.toString(CryptoJS.enc.Utf8);
+      return originalText;
+    };
+
+    requiredFrom = Number(decryptWithAES(requiredFrom));
+
+    if (requiredFrom !== 1) {
+      optionalTo = undefined
+    }
 
     if (optionalTo) {
-      optionalTo = Number(optionalTo.split('=')[1])
+      optionalTo = Number(optionalTo)
       socket.emit('getMsgByUserId', { userId: Number(optionalTo) })
     }
 
-    let requiredFrom = params.filter(param => param.includes('from'))[0]
-    requiredFrom = Number(requiredFrom.split('=')[1])
-
-    history.replaceState && history.replaceState(
-      null, '', location.pathname + location.search.replace(/[\?&]from=[^&]+/, '').replace(/^&/, '?')
-    );
-
-    history.replaceState && history.replaceState(
-      null, '', location.pathname + location.search.replace(/[\?&]to=[^&]+/, '').replace(/^&/, '?')
-    );
-
-    window.addEventListener('onbeforeunload', (event) => {
-      event.preventDefault()
-
-      window.location = `${window.location.origin}/?from=${requiredFrom}&to=${optionalTo}`
-
-      event.returnValue = ''
-    })
-
-    let form = document.querySelector('#messForm');
-    let message = document.querySelector('#message');
-    let name = document.querySelector('#name');
-    let allMessages = document.querySelector('#allMessages');
+    let form = document.querySelector('#messForm')
+    let message = document.querySelector('#message')
+    let name = document.querySelector('#name')
+    let allMessages = document.querySelector('#allMessages')
 
     // get block with notification about no messages for removing
-    let noMessages = document.querySelector('#noMessages');
+    let noMessages = document.querySelector('#noMessages')
 
     // colorize it!
-    let colors = ['primary', 'white'];
+    let colors = ['primary', 'white']
 
     // add user to socket server
-    socket.emit('addUser', { userId: requiredFrom });
+    socket.emit('addUser', { userId: requiredFrom })
 
     form.addEventListener('submit', function(event) {
-      event.preventDefault();
+      event.preventDefault()
 
-      let msg = message.value;
-      // let user = name.value;
-      let to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== requiredFrom)[0].dataset.id;
+      let msg = message.value
+      // let user = name.value
+      let to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== requiredFrom)[0].dataset.id
 
-      socket.emit('sendMessage', { msg: msg, user: requiredFrom, to: to });
+      socket.emit('sendMessage', { msg: msg, user: requiredFrom, to: to })
 
       // clear input after sending
-      message.value = '';
+      message.value = ''
 
       // fix name
-      // name.disabled = "true";
-    });
+      // name.disabled = "true"
+    })
 
     socket.on('addMessage', function(data) {
-      let msg = data.msg;
-      let user = data.user;
-      let userId = data.userId;
+      let msg = data.msg
+      let user = data.user
+      let userId = data.userId
 
       function isEven(n) {
-        return n % 2 == 0;
+        return n % 2 == 0
       }
 
-      let even = isEven(userId) ? 'even' : 'odd';
-      let color = isEven(userId) ? colors[0] : colors[1];
+      let even = isEven(userId) ? 'even' : 'odd'
+      let color = isEven(userId) ? colors[0] : colors[1]
 
-      let date = new Date;
-      let hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
-      let minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-      let time = hours + ':' + minutes;
+      let date = new Date
+      let hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+      let minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+      let time = hours + ':' + minutes
 
       // remove notifiaction
-      noMessages.remove();
+      noMessages.remove()
 
       allMessages.innerHTML += `
                 <div class="message mb-2 message-` + color + ` message-` + even + ` p-2 rounded w-75" data-id="${userId}">
@@ -133,40 +137,34 @@
         msg +
         `<p class="text-right m-0"><small>` + time + `</small></p>` +
         `</div>
-            `;
-    });
+            `
+    })
   })
 
   </script>
   <style>
   .all-messages {
-    max-height: 500px;
-    height: 100%;
+    max-height: 500px height: 100%
   }
 
   .text-lg {
-    font-weight: 500;
-    font-size: 18pt;
+    font-weight: 500 font-size: 18pt
   }
 
   .message-primary {
-    background: #007bff !important;
-    color: #fff !important;
-    border: 1px solid #007bff;
+    background: #007bff !important color: #fff !important border: 1px solid #007bff
   }
 
   .message-white {
-    background: #fff !important;
-    color: #212529 !important;
-    border: 1px solid #212529;
+    background: #fff !important color: #212529 !important border: 1px solid #212529
   }
 
   .message-even {
-    margin-right: auto;
+    margin-right: auto
   }
 
   .message-odd {
-    margin-left: auto;
+    margin-left: auto
   }
 
   </style>
