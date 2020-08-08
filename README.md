@@ -15,7 +15,16 @@ git clone https://github.com/kantegory/socketio-chat.git
 cd socketio-chat && npm i
 ```
 
-3. Run project:
+3. Configure db:
+
+```bash
+cd conf
+cp config.sample.ini config.ini
+```
+
+Then edit config.ini.
+
+4. Run project:
 
 ```bash
 npm start

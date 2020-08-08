@@ -1,2 +1,0 @@
-const openpgp = require('openpgp');
-
