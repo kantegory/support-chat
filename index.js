@@ -55,9 +55,9 @@ io.sockets.on('connection', function(socket) {
   })
 
   socket.on('addUser', async function(data) {
-    if (data.userId === 1) {
-      return
-    }
+    // if (data.userId === 1) {
+    //   return
+    // }
 
     users[data.userId] = socket.id
     console.log('updated users are', users)

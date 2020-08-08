@@ -58,9 +58,24 @@
       socket.emit('getMsgByUserId', { userId: Number(optionalTo) })
     }
 
-
     let requiredFrom = params.filter(param => param.includes('from'))[0]
     requiredFrom = Number(requiredFrom.split('=')[1])
+
+    history.replaceState && history.replaceState(
+      null, '', location.pathname + location.search.replace(/[\?&]from=[^&]+/, '').replace(/^&/, '?')
+    );
+
+    history.replaceState && history.replaceState(
+      null, '', location.pathname + location.search.replace(/[\?&]to=[^&]+/, '').replace(/^&/, '?')
+    );
+
+    window.addEventListener('onbeforeunload', (event) => {
+      event.preventDefault()
+
+      window.location = `${window.location.origin}/?from=${requiredFrom}&to=${optionalTo}`
+
+      event.returnValue = ''
+    })
 
     let form = document.querySelector('#messForm');
     let message = document.querySelector('#message');
