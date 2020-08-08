@@ -3,12 +3,7 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 
-// include auth
-const passport = require('passport');
-const session = require('express-session');
-
-// include mongo
-const addMessages = require('./utils/mongo/addMessage');
+const saveMessage = require('./utils/pg/saveMessage');
 
 server.listen(3000);
 
@@ -35,11 +30,11 @@ io.sockets.on('connection', function (socket) {
         user = data.user;
         users.push(user);
 
-        msgObj = {'msg': data.msg, 'user': data.user}
+        msgObj = {'body': data.msg, 'userId': data.user}
 
         messages.push(msgObj);
 
-        addMessages([msgObj]);
+        saveMessage(msgObj);
 
         userId = users.indexOf(user);
         console.log('New user, user id: ', userId);

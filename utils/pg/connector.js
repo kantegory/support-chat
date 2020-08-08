@@ -2,7 +2,7 @@ const { Client } = require('pg')
 const ini = require('ini')
 const fs = require('fs')
 
-const confPath = "../../conf/config.ini"
+const confPath = "/home/kantegory/work/chat/support-chat/conf/config.ini"
 
 const db = ini.parse(fs.readFileSync(confPath, 'utf-8')).db
 
@@ -14,9 +14,5 @@ const client = new Client({
   port: db.port,
 })
 
-client.connect()
+module.exports = client
 
-client.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  client.end()
-})
