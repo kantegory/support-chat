@@ -34,9 +34,12 @@ io.sockets.on('connection', function (socket) {
         msg = data.msg;
         user = data.user;
         users.push(user);
-        messages.push({'msg': data.msg, 'user': data.user});
 
-        addMessages(messages);
+        msgObj = {'msg': data.msg, 'user': data.user}
+
+        messages.push(msgObj);
+
+        addMessages([msgObj]);
 
         userId = users.indexOf(user);
         console.log('New user, user id: ', userId);
