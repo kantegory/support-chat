@@ -55,6 +55,10 @@ io.sockets.on('connection', function(socket) {
   })
 
   socket.on('addUser', async function(data) {
+    if (data.userId === 1) {
+      return
+    }
+
     users[data.userId] = socket.id
     console.log('updated users are', users)
     let msgs = await getMessages(data.userId)
@@ -65,6 +69,14 @@ io.sockets.on('connection', function(socket) {
       io.sockets.to(socket.id).emit('addMessage', { msg: msg.body, user: 'username', userId: msg.user_id })
     })
 
+  })
+
+  socket.on('getMsgByUserId', async (data) => {
+    let msgs = await getMessages(data.userId)
+
+    msgs.forEach((msg) => {
+      io.sockets.to(socket.id).emit('addMessage', { msg: msg.body, user: 'username', userId: msg.user_id })
+    })
   })
 
   socket.on('sendMessage', function(data) {

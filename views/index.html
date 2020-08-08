@@ -49,6 +49,12 @@
   window.addEventListener('load', function() {
     let socket = io.connect();
 
+    let optionalTo = window.location.search.split('=')[1];
+
+    if (optionalTo) {
+      socket.emit('getMsgByUserId', { userId: Number(optionalTo) })
+    }
+
     let form = document.querySelector('#messForm');
     let message = document.querySelector('#message');
     let name = document.querySelector('#name');

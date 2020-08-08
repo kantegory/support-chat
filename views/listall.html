@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>All chats for admin</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+  <header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <h5 class="m-auto">Socket.io Chat</h5>
+  </header>
+  <main class="container">
+    <ul id="chats"></ul>
+  </main>
+</body>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+  let chatsContainer = document.querySelector('#chats')
+
+  fetch('http://localhost:3000/getall')
+    .then(res => res.json())
+    .then(res => {
+      let chats = res.data;
+
+      for (chat of chats) {
+        chatsContainer.innerHTML += `<li><a href="/?to=${chat}">Чат с пользователем #${chat}</a></li>`;
+      }
+
+    })
+    .catch(err => { console.error(err) })
+})
+
+</script>
+
+</html>
