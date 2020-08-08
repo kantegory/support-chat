@@ -20,10 +20,10 @@
       <div class="col-6">
         <h3>Start messaging</h3>
         <form id="messForm">
-          <div class="form-group">
+          <!--           <div class="form-group">
             <label for="name">Id <span class="text-danger">*</span></label>
             <input type="text" id="name" class="form-control" placeholder="John Doe" required>
-          </div>
+          </div> -->
           <div class="form-group">
             <label for="message">Message</label>
             <textarea name="message" id="message" cols="30" rows="10" class="form-control" placeholder="Hello, world..."></textarea>
@@ -49,11 +49,18 @@
   window.addEventListener('load', function() {
     let socket = io.connect();
 
-    let optionalTo = window.location.search.split('=')[1];
+    let params = window.location.search.substr(1).split('&')
+
+    let optionalTo = params.filter(param => param.includes('to'))[0]
 
     if (optionalTo) {
+      optionalTo = Number(optionalTo.split('=')[1])
       socket.emit('getMsgByUserId', { userId: Number(optionalTo) })
     }
+
+
+    let requiredFrom = params.filter(param => param.includes('from'))[0]
+    requiredFrom = Number(requiredFrom.split('=')[1])
 
     let form = document.querySelector('#messForm');
     let message = document.querySelector('#message');
@@ -67,22 +74,22 @@
     let colors = ['primary', 'white'];
 
     // add user to socket server
-    socket.emit('addUser', { userId: Number(name.value) });
+    socket.emit('addUser', { userId: requiredFrom });
 
     form.addEventListener('submit', function(event) {
       event.preventDefault();
 
       let msg = message.value;
-      let user = name.value;
-      let to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== user)[0].dataset.id;
+      // let user = name.value;
+      let to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== requiredFrom)[0].dataset.id;
 
-      socket.emit('sendMessage', { msg: msg, user: user, to: to });
+      socket.emit('sendMessage', { msg: msg, user: requiredFrom, to: to });
 
       // clear input after sending
       message.value = '';
 
       // fix name
-      name.disabled = "true";
+      // name.disabled = "true";
     });
 
     socket.on('addMessage', function(data) {
