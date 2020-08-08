@@ -4,6 +4,7 @@ const server = require('http').createServer(app);
 const io = require('socket.io').listen(server);
 
 const saveMessage = require('./utils/pg/saveMessage');
+const getMessages = require('./utils/pg/getMessages');
 
 server.listen(3000);
 
@@ -15,9 +16,17 @@ users = [];
 connections = [];
 messages = [];
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', async function (socket) {
     console.log('Success connection');
     connections.push(socket);
+
+    let msgs = await getMessages(2);
+
+    console.log('msgs are', msgs)
+
+    msgs.forEach((msg) => {
+      io.sockets.emit('addMessage', {msg: msg.body, user: 'username', userId: msg.user_id})
+    })
 
     socket.on('disconnect', function (data) {
         connections.splice(connections.indexOf(socket), 1);

@@ -14,5 +14,7 @@ const client = new Client({
   port: db.port,
 })
 
+client.connect()
+
 module.exports = client
 
