@@ -1,0 +1,15 @@
+[Unit]
+Description=Support chat sock server
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /root/support-chat/socket.js
+WorkingDirectory=/root/support-chat
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

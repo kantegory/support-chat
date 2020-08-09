@@ -63,6 +63,8 @@
       return CryptoJS.AES.encrypt(text, passphrase).toString();
     };
 
+    // console.log('encrypted', encryptWithAES(requiredFrom));
+
     const decryptWithAES = ciphertext => {
       const passphrase = 'secret';
       const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
@@ -71,6 +73,8 @@
     };
 
     requiredFrom = Number(decryptWithAES(requiredFrom));
+
+    // console.log('decrypted', requiredFrom);
 
     if (requiredFrom !== 1) {
       optionalTo = undefined
@@ -100,7 +104,15 @@
 
       let msg = message.value
       // let user = name.value
-      let to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== requiredFrom)[0].dataset.id
+      let to = ''
+
+      if (document.querySelectorAll('.messages').length) {
+        to = Array.from(document.querySelectorAll('.message')).filter(_msg => _msg.dataset.id !== requiredFrom)[0].dataset.id
+      }
+
+      if (to === '') {
+        to = optionalTo
+      }
 
       socket.emit('sendMessage', { msg: msg, user: requiredFrom, to: to })
 
