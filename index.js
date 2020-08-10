@@ -13,7 +13,6 @@ app.get('/listall', (req, res) => {
 })
 
 app.get('/getall', async (req, res) => {
-  // console.log('this is request', req.query)
   let msgs = await getMessages(1)
 
   msgs = msgs.filter(msg => msg.user_id !== 1)

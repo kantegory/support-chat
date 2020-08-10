@@ -20,10 +20,6 @@
       <div class="col-6">
         <h3>Start messaging</h3>
         <form id="messForm">
-          <!--           <div class="form-group">
-            <label for="name">Id <span class="text-danger">*</span></label>
-            <input type="text" id="name" class="form-control" placeholder="John Doe" required>
-          </div> -->
           <div class="form-group">
             <label for="message">Message</label>
             <textarea name="message" id="message" cols="30" rows="10" class="form-control" placeholder="Hello, world..."></textarea>
@@ -63,8 +59,6 @@
       return CryptoJS.AES.encrypt(text, passphrase).toString();
     };
 
-    // console.log('encrypted', encryptWithAES(requiredFrom));
-
     const decryptWithAES = ciphertext => {
       const passphrase = 'secret';
       const bytes = CryptoJS.AES.decrypt(ciphertext, passphrase);
@@ -73,8 +67,6 @@
     };
 
     requiredFrom = Number(decryptWithAES(requiredFrom));
-
-    // console.log('decrypted', requiredFrom);
 
     if (requiredFrom !== 1) {
       optionalTo = undefined
@@ -87,7 +79,6 @@
 
     let form = document.querySelector('#messForm')
     let message = document.querySelector('#message')
-    let name = document.querySelector('#name')
     let allMessages = document.querySelector('#allMessages')
 
     // get block with notification about no messages for removing
@@ -103,7 +94,6 @@
       event.preventDefault()
 
       let msg = message.value
-      // let user = name.value
       let to = ''
 
       if (document.querySelectorAll('.messages').length) {
@@ -118,9 +108,6 @@
 
       // clear input after sending
       message.value = ''
-
-      // fix name
-      // name.disabled = "true"
     })
 
     socket.on('addMessage', function(data) {
