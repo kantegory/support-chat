@@ -1,5 +1,6 @@
-# socketio-chat
-Node.JS simple chat, using express, mongoDB and socket.io 
+# support-chat
+
+Node.JS simple chat for be in contact with admin/support.
 
 ## Installing:
 
